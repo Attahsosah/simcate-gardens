@@ -20,6 +20,43 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+### Environment
+
+Copy `.env.example` to `.env.local` and fill in values:
+
+```bash
+cp .env.example .env.local
+```
+
+Set `DATABASE_URL` to your Postgres instance. If you have Docker, you can start a local database:
+
+```bash
+docker compose up -d
+```
+
+Optional: Configure OAuth providers (Google) for authentication:
+
+```
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+```
+
+### Database
+
+Generate Prisma client and run migrations:
+
+```bash
+npm run db:generate
+npm run db:migrate -- --name init
+```
+
+### Auth
+
+- API route: `app/api/auth/[...nextauth]/route.ts`
+- Shared config: `lib/auth.ts`
+- Client session provider: `app/providers.tsx`
+- Example protected page: `app/dashboard/page.tsx`
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

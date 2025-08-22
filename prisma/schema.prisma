@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Application enums
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// NextAuth.js models (compatible with @auth/prisma-adapter)
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  role           Role      @default(USER)
+
+  accounts Account[]
+  sessions Session[]
+
+  // Domain relations
+  hotels   Hotel[]    @relation("UserHotels")
+  bookings Booking[]
+  reviews  Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Domain models
+model Hotel {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  address     String
+  city        String
+  country     String
+  ownerId     String
+
+  owner   User         @relation("UserHotels", fields: [ownerId], references: [id], onDelete: Cascade)
+  rooms   Room[]
+  images  HotelImage[]
+  reviews Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([city])
+  @@index([country])
+}
+
+model Room {
+  id          String        @id @default(cuid())
+  hotelId     String
+  name        String
+  description String?
+  priceCents  Int           // store price in cents to avoid floating point issues
+  capacity    Int
+
+  hotel    Hotel        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  images   RoomImage[]
+  bookings Booking[]
+
+  // amenities via join table
+  amenities RoomAmenity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hotelId])
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  userId     String
+  roomId     String
+  checkIn    DateTime
+  checkOut   DateTime
+  numGuests  Int
+  totalCents Int
+  status     BookingStatus @default(PENDING)
+
+  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room  Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([roomId])
+  @@index([checkIn])
+  @@index([checkOut])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  hotelId   String
+  rating    Int
+  comment   String?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hotelId])
+  @@index([userId])
+}
+
+model Amenity {
+  id   String @id @default(cuid())
+  name String @unique
+
+  rooms RoomAmenity[]
+}
+
+model RoomAmenity {
+  roomId    String
+  amenityId String
+
+  room    Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  amenity Amenity @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, amenityId])
+}
+
+model HotelImage {
+  id      String @id @default(cuid())
+  hotelId String
+  url     String
+
+  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model RoomImage {
+  id     String @id @default(cuid())
+  roomId String
+  url    String
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
