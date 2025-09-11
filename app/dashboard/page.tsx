@@ -15,7 +15,7 @@ export default function DashboardPage() {
     checkOut: string;
     numGuests: number;
     totalCents: number;
-    status: string;
+    status: BookingStatus;
     room: {
       name: string;
       resort: {

@@ -44,33 +44,39 @@ interface Feature {
 interface Facility {
   id: string;
   name: string;
-  description?: string;
+  description: string | null;
   facilityType: 'POOL' | 'SPA' | 'GYM' | 'RESTAURANT' | 'BAR' | 'CONFERENCE_ROOM' | 'TENNIS_COURT' | 'GOLF_COURSE' | 'BEACH_ACCESS' | 'PARKING';
   isActive: boolean;
+  imageUrl: string | null;
   resortId: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface Room {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   roomType: string;
   capacity: number;
   price: number;
-  previewImageUrl?: string;
+  previewImageUrl: string | null;
   amenities: Array<{
     amenity: string;
+  }>;
+  roomImages: Array<{
+    id: string;
+    url: string;
+    caption: string | null;
   }>;
 }
 
 interface ResortImage {
   id: string;
   url: string;
-  caption?: string;
+  caption: string | null;
   resortId: string;
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface RestaurantFeature {
@@ -226,7 +232,9 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
 
   const heroColors = getColorScheme('hero') || {
     primaryColor: '#4F46E5',
-    secondaryColor: '#7C3AED'
+    secondaryColor: '#7C3AED',
+    backgroundColor: '#FFFFFF',
+    textColor: '#1F2937'
   };
 
   const facilitiesContent = getSectionContent('facilities') || {
@@ -236,7 +244,9 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
 
   const facilitiesColors = getColorScheme('facilities') || {
     primaryColor: '#059669',
-    secondaryColor: '#10B981'
+    secondaryColor: '#10B981',
+    backgroundColor: '#FFFFFF',
+    textColor: '#1F2937'
   };
 
   const restaurantContent = restaurantCustomization?.content || getSectionContent('restaurant') || {
@@ -246,7 +256,9 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
 
   const restaurantColors = getColorScheme('restaurant') || {
     primaryColor: '#EA580C',
-    secondaryColor: '#F97316'
+    secondaryColor: '#F97316',
+    backgroundColor: '#FFFFFF',
+    textColor: '#1F2937'
   };
 
   const roomsContent = getSectionContent('rooms') || {
@@ -256,7 +268,9 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
 
   const roomsColors = getColorScheme('rooms') || {
     primaryColor: '#2563EB',
-    secondaryColor: '#3B82F6'
+    secondaryColor: '#3B82F6',
+    backgroundColor: '#FFFFFF',
+    textColor: '#1F2937'
   };
 
   const galleryContent = getSectionContent('gallery') || {
@@ -267,7 +281,9 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
 
   const galleryColors = getColorScheme('gallery') || {
     primaryColor: '#7C3AED',
-    secondaryColor: '#A855F7'
+    secondaryColor: '#A855F7',
+    backgroundColor: '#FFFFFF',
+    textColor: '#1F2937'
   };
 
   // Get section images
@@ -356,25 +372,8 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
             <div className="order-2 lg:order-1">
               <ImageCarousel
                 images={restaurantImages}
-                fallbackImages={[
-                  ...(restaurantFacility?.imageUrl ? [{
-                    id: 'facility-image',
-                    url: restaurantFacility.imageUrl,
-                    caption: restaurantFacility.name || "Restaurant",
-                    alt: restaurantFacility.name || "Restaurant"
-                  }] : []),
-                  ...resortImages.map(img => ({
-                    id: img.id,
-                    url: img.url,
-                    caption: img.caption || "Resort View",
-                    alt: img.caption || "Resort View"
-                  }))
-                ]}
+                alt="Restaurant"
                 className="card-modern"
-                autoPlay={true}
-                autoPlayInterval={6000}
-                showDots={true}
-                showArrows={true}
               />
             </div>
 
@@ -581,11 +580,10 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
               href="/gallery"
               className="inline-block text-white px-8 py-3 rounded-lg font-semibold transition-colors"
               style={{ 
-                backgroundColor: galleryColors.primaryColor,
-                ':hover': { backgroundColor: galleryColors.secondaryColor }
+                backgroundColor: galleryColors.primaryColor
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = galleryColors.secondaryColor}
-              onMouseLeave={(e) => e.target.style.backgroundColor = galleryColors.primaryColor}
+              onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = galleryColors.secondaryColor}
+              onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = galleryColors.primaryColor}
             >
               View All Photos
             </Link>
@@ -789,9 +787,9 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
                   {room.amenities.length > 0 && (
                     <div className="mb-4">
                       <div className="flex flex-wrap gap-1">
-                        {room.amenities.slice(0, 3).map((amenityItem) => (
+                        {room.amenities.slice(0, 3).map((amenityItem, index) => (
                           <span
-                            key={amenityItem.id}
+                            key={index}
                             className="inline-flex px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800"
                           >
                             {amenityItem.amenity}
@@ -822,8 +820,8 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
               href="/rooms"
               className="inline-block text-white px-8 py-3 rounded-lg font-semibold transition-colors"
               style={{ backgroundColor: roomsColors.primaryColor }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = roomsColors.secondaryColor}
-              onMouseLeave={(e) => e.target.style.backgroundColor = roomsColors.primaryColor}
+              onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = roomsColors.secondaryColor}
+              onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = roomsColors.primaryColor}
             >
               View All Rooms
             </Link>

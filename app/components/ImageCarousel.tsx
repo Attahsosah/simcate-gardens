@@ -7,7 +7,7 @@ interface ImageCarouselProps {
   images: Array<{
     id: string;
     url: string;
-    caption?: string;
+    caption?: string | null;
   }>;
   alt: string;
   className?: string;
