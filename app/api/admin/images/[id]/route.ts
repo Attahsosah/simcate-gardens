@@ -25,7 +25,7 @@ export async function DELETE(
     const { id } = await params;
 
     // Try to find the image in both tables
-    let image = await prisma.resortImage.findUnique({
+    let image: any = await prisma.resortImage.findUnique({
       where: { id },
       include: { resort: true },
     });
