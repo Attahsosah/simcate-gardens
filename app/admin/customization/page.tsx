@@ -507,7 +507,7 @@ export default function AdminCustomizationPage() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Site Customization</h2>
             <p className="text-sm text-gray-600 mt-1">
-              Customize your website's appearance and content section by section
+              Customize your website&apos;s appearance and content section by section
             </p>
           </div>
           <button

@@ -9,7 +9,20 @@ import { BookingStatus } from "@prisma/client";
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<{
+    id: string;
+    checkIn: string;
+    checkOut: string;
+    numGuests: number;
+    totalCents: number;
+    status: string;
+    room: {
+      name: string;
+      resort: {
+        name: string;
+      };
+    };
+  }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

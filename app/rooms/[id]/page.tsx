@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import BookingForm from "@/app/components/BookingForm";
 import ImageCarousel from "@/app/components/ImageCarousel";
 
@@ -28,9 +29,9 @@ export default async function RoomPage({ params }: RoomPageProps) {
         {/* Breadcrumb */}
         <nav className="mb-8">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <a href="/" className="hover:text-indigo-600 transition-colors">Home</a>
+            <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
             <span>/</span>
-            <a href="/rooms" className="hover:text-indigo-600 transition-colors">Rooms</a>
+            <Link href="/rooms" className="hover:text-indigo-600 transition-colors">Rooms</Link>
             <span>/</span>
             <span className="text-gray-900 font-medium">{room.name}</span>
           </div>
