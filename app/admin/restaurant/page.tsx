@@ -1,3 +1,4 @@
+// app/admin/restaurant/page.tsx
 
 "use client";
 
@@ -98,7 +99,7 @@ export default function RestaurantCustomizationPage() {
             },
             {
               title: "Signature Dishes",
-              description: "Chef's special creations",
+              description: "Chef&apos;s special creations",
               icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
             }
           ]);

@@ -46,7 +46,7 @@ A modern, full-stack hotel booking system built with Next.js 15, featuring a com
 ### Installation
 
 1. **Clone the repository**
-   ```bash
+```bash
    git clone https://github.com/yourusername/simcate-gardens.git
    cd simcate-gardens
    ```
@@ -57,10 +57,10 @@ A modern, full-stack hotel booking system built with Next.js 15, featuring a com
    ```
 
 3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
+```bash
+cp .env.example .env.local
+```
+
    Update `.env.local` with your configuration:
    ```env
    NEXTAUTH_URL=http://localhost:3000
@@ -75,7 +75,7 @@ A modern, full-stack hotel booking system built with Next.js 15, featuring a com
    ```
 
 5. **Start the development server**
-   ```bash
+```bash
    npm run dev
    ```
 
