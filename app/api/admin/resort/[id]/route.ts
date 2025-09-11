@@ -24,22 +24,13 @@ export async function PUT(
       name,
       description,
       address,
-      city,
-      country,
       phone,
       email,
       website,
-      hasPool,
-      hasRestaurant,
-      hasSpa,
-      hasGym,
-      hasBeach,
-      hasParking,
-      hasWifi,
     } = body;
 
     // Validation
-    if (!name || !description || !address || !city || !country) {
+    if (!name || !description) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -53,18 +44,9 @@ export async function PUT(
         name,
         description,
         address,
-        city,
-        country,
         phone,
         email,
         website,
-        hasPool,
-        hasRestaurant,
-        hasSpa,
-        hasGym,
-        hasBeach,
-        hasParking,
-        hasWifi,
       },
     });
 
