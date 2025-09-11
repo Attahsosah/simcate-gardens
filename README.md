@@ -1,73 +1,186 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏨 Simcate Gardens Hotel Booking System
 
-## Getting Started
+A modern, full-stack hotel booking system built with Next.js 15, featuring a comprehensive admin panel, user authentication, and a beautiful responsive design.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 🎯 Core Functionality
+- **Room Booking System** - Complete booking flow with date selection
+- **User Authentication** - Secure login/signup with NextAuth
+- **Admin Panel** - Comprehensive management dashboard
+- **Image Management** - Upload and manage room/resort images
+- **Responsive Design** - Mobile-first approach with Tailwind CSS
+
+### 🏠 User Features
+- Browse available rooms with detailed information
+- Image carousel for room galleries
+- Real-time availability checking
+- User dashboard for booking management
+- Secure payment-ready booking system
+
+### 👨‍💼 Admin Features
+- **Room Management** - Add, edit, delete rooms with amenities
+- **Facility Management** - Manage resort facilities and features
+- **Content Customization** - Customize homepage content and colors
+- **Image Management** - Upload and organize images
+- **User Management** - View and manage user accounts
+- **Booking Management** - View and manage all bookings
+- **Restaurant Management** - Manage restaurant information and images
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: SQLite with Prisma ORM
+- **Authentication**: NextAuth.js
+- **Image Handling**: Next.js Image component with upload functionality
+- **Date Picking**: Custom date range picker
+- **Icons**: Heroicons
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/simcate-gardens.git
+   cd simcate-gardens
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Update `.env.local` with your configuration:
+   ```env
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your-secret-key
+   DATABASE_URL="file:./dev.db"
+   ```
+
+4. **Set up the database**
+   ```bash
+   npx prisma migrate dev
+   npm run seed
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📁 Project Structure
+
+```
+simcate-gardens/
+├── app/
+│   ├── admin/                 # Admin panel pages
+│   ├── api/                   # API routes
+│   ├── components/            # Reusable components
+│   ├── dashboard/             # User dashboard
+│   ├── rooms/                 # Room pages
+│   └── ...
+├── prisma/
+│   ├── schema.prisma          # Database schema
+│   ├── seed.ts               # Database seeding
+│   └── migrations/           # Database migrations
+├── public/                   # Static assets
+└── lib/                      # Utility functions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗄️ Database Schema
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The system uses the following main entities:
+- **User** - User accounts and authentication
+- **Resort** - Resort information and settings
+- **Room** - Room details, pricing, and availability
+- **Booking** - User bookings and reservations
+- **Facility** - Resort facilities and amenities
+- **RoomImage** - Room gallery images
+- **ResortImage** - Resort showcase images
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔐 Authentication
 
-### Environment
+The system includes:
+- **User Registration** - New user signup
+- **User Login** - Secure authentication
+- **Role-based Access** - Admin and regular user roles
+- **Protected Routes** - Admin-only sections
 
-Copy `.env.example` to `.env.local` and fill in values:
+### Default Admin Credentials
+- **Email**: test@example.com
+- **Password**: password123
 
-```bash
-cp .env.example .env.local
-```
+## 🎨 Customization
 
-Set `DATABASE_URL` to your Postgres instance. If you have Docker, you can start a local database:
+The admin panel allows you to:
+- Customize homepage content and colors
+- Manage room types and amenities
+- Upload and organize images
+- Configure resort settings
+- Manage facilities and features
 
-```bash
-docker compose up -d
-```
+## 📱 Responsive Design
 
-Optional: Configure OAuth providers (Google) for authentication:
+The application is fully responsive and works seamlessly on:
+- Desktop computers
+- Tablets
+- Mobile phones
 
-```
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-```
+## 🚀 Deployment
 
-### Database
+### Vercel (Recommended)
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Set environment variables in Vercel dashboard
+4. Deploy!
 
-Generate Prisma client and run migrations:
+### Other Platforms
+The application can be deployed to any platform that supports Next.js:
+- Netlify
+- Railway
+- DigitalOcean App Platform
+- AWS Amplify
 
-```bash
-npm run db:generate
-npm run db:migrate -- --name init
-```
+## 🤝 Contributing
 
-### Auth
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- API route: `app/api/auth/[...nextauth]/route.ts`
-- Shared config: `lib/auth.ts`
-- Client session provider: `app/providers.tsx`
-- Example protected page: `app/dashboard/page.tsx`
+## 📄 License
 
-## Learn More
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-To learn more about Next.js, take a look at the following resources:
+## 🆘 Support
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If you encounter any issues or have questions:
+1. Check the [Issues](https://github.com/yourusername/simcate-gardens/issues) page
+2. Create a new issue with detailed information
+3. Contact the development team
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🙏 Acknowledgments
 
-## Deploy on Vercel
+- Next.js team for the amazing framework
+- Prisma team for the excellent ORM
+- Tailwind CSS for the utility-first CSS framework
+- Heroicons for the beautiful icon set
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Built with ❤️ for Simcate Gardens**
