@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
 interface FacilityPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function FacilityPage({ params }: FacilityPageProps) {

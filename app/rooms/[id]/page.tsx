@@ -5,7 +5,7 @@ import BookingForm from "@/app/components/BookingForm";
 import ImageCarousel from "@/app/components/ImageCarousel";
 
 interface RoomPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {

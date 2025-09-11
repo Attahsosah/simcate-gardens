@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import EditRoomForm from "./EditRoomForm";
 
 interface EditRoomPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditRoomPage({ params }: EditRoomPageProps) {
