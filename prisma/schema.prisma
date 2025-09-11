@@ -1,51 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
-}
-
-// Application enums
-enum Role {
-  USER
-  ADMIN
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
-// NextAuth.js models (compatible with @auth/prisma-adapter)
-model User {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
-  hashedPassword String?
-  role           Role      @default(USER)
-
-  accounts Account[]
-  sessions Session[]
-
-  // Domain relations
-  hotels   Hotel[]    @relation("UserHotels")
-  bookings Booking[]
-  reviews  Review[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -61,8 +20,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -72,8 +30,23 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model User {
+  id               String            @id @default(cuid())
+  name             String?
+  email            String            @unique
+  emailVerified    DateTime?
+  image            String?
+  hashedPassword   String?
+  role             Role              @default(USER)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  accounts         Account[]
+  bookings         Booking[]
+  facilityBookings FacilityBooking[]
+  sessions         Session[]
 }
 
 model VerificationToken {
@@ -84,121 +57,200 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Domain models
-model Hotel {
-  id          String       @id @default(cuid())
-  name        String
-  description String?
-  address     String
-  city        String
-  country     String
-  ownerId     String
-
-  owner   User         @relation("UserHotels", fields: [ownerId], references: [id], onDelete: Cascade)
-  rooms   Room[]
-  images  HotelImage[]
-  reviews Review[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([city])
-  @@index([country])
+model Resort {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  address      String?
+  phone        String?
+  email        String?
+  website      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  facilities   Facility[]
+  resortImages ResortImage[]
+  rooms        Room[]
 }
 
 model Room {
-  id          String        @id @default(cuid())
-  hotelId     String
-  name        String
-  description String?
-  priceCents  Int           // store price in cents to avoid floating point issues
-  capacity    Int
-
-  hotel    Hotel        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-  images   RoomImage[]
-  bookings Booking[]
-
-  // amenities via join table
-  amenities RoomAmenity[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([hotelId])
-}
-
-model Booking {
-  id         String        @id @default(cuid())
-  userId     String
-  roomId     String
-  checkIn    DateTime
-  checkOut   DateTime
-  numGuests  Int
-  totalCents Int
-  status     BookingStatus @default(PENDING)
-
-  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  room  Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([roomId])
-  @@index([checkIn])
-  @@index([checkOut])
-}
-
-model Review {
-  id        String   @id @default(cuid())
-  userId    String
-  hotelId   String
-  rating    Int
-  comment   String?
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([hotelId])
-  @@index([userId])
-}
-
-model Amenity {
-  id   String @id @default(cuid())
-  name String @unique
-
-  rooms RoomAmenity[]
+  id              String        @id @default(cuid())
+  name            String
+  description     String?
+  price           Float
+  capacity        Int
+  roomType        RoomType
+  isActive        Boolean       @default(true)
+  previewImageUrl String?
+  resortId        String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  bookings        Booking[]
+  resort          Resort        @relation(fields: [resortId], references: [id], onDelete: Cascade)
+  amenities       RoomAmenity[]
+  roomImages      RoomImage[]
 }
 
 model RoomAmenity {
-  roomId    String
-  amenityId String
-
-  room    Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  amenity Amenity @relation(fields: [amenityId], references: [id], onDelete: Cascade)
-
-  @@id([roomId, amenityId])
-}
-
-model HotelImage {
   id      String @id @default(cuid())
-  hotelId String
-  url     String
+  roomId  String
+  amenity String
+  room    Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
-  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
+  @@unique([roomId, amenity])
 }
 
 model RoomImage {
-  id     String @id @default(cuid())
-  roomId String
-  url    String
-
-  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  roomId    String
   createdAt DateTime @default(now())
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model ResortImage {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  resortId  String
+  createdAt DateTime @default(now())
+  resort    Resort   @relation(fields: [resortId], references: [id], onDelete: Cascade)
+}
+
+model Facility {
+  id           String            @id @default(cuid())
+  name         String
+  description  String?
+  facilityType FacilityType
+  isActive     Boolean           @default(true)
+  imageUrl     String?
+  resortId     String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  resort       Resort            @relation(fields: [resortId], references: [id], onDelete: Cascade)
+  bookings     FacilityBooking[]
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  checkIn         DateTime
+  checkOut        DateTime
+  guests          Int
+  totalPrice      Float
+  status          BookingStatus @default(PENDING)
+  specialRequests String?
+  userId          String
+  roomId          String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  room            Room          @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FacilityBooking {
+  id         String        @id @default(cuid())
+  date       DateTime
+  time       String?
+  guests     Int?
+  facilityId String
+  userId     String
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facility   Facility      @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+}
+
+model SectionContent {
+  id          String   @id @default(cuid())
+  section     String   @unique
+  title       String
+  subtitle    String?
+  description String
+  ctaText     String?
+  ctaLink     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ColorScheme {
+  id              String   @id @default(cuid())
+  section         String   @unique
+  primaryColor    String   @default("#4F46E5")
+  secondaryColor  String   @default("#7C3AED")
+  backgroundColor String   @default("#FFFFFF")
+  textColor       String   @default("#1F2937")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SectionImage {
+  id        String   @id @default(cuid())
+  section   String
+  url       String
+  caption   String?
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([section, position])
+}
+
+model Feature {
+  id          String   @id @default(cuid())
+  section     String
+  title       String
+  description String
+  icon        String
+  position    Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([section, position])
+}
+
+model RestaurantDetail {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String
+  icon      String
+  position  Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([position])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RoomType {
+  STANDARD
+  DELUXE
+  SUITE
+  VILLA
+}
+
+enum FacilityType {
+  POOL
+  SPA
+  GYM
+  RESTAURANT
+  BAR
+  CONFERENCE_ROOM
+  TENNIS_COURT
+  GOLF_COURSE
+  BEACH_ACCESS
+  PARKING
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }

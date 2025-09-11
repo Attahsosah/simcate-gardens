@@ -1,112 +1,114 @@
-import { PrismaClient } from '../app/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create a test user
-  const hashedPassword = await bcrypt.hash('password123', 12);
-  const user = await prisma.user.upsert({
+  // Create admin user
+  const adminHashedPassword = await bcrypt.hash('password123', 12);
+  const adminUser = await prisma.user.upsert({
     where: { email: 'test@example.com' },
     update: {},
     create: {
       email: 'test@example.com',
-      name: 'Test User',
-      hashedPassword,
+      name: 'Test Admin',
+      hashedPassword: adminHashedPassword,
       role: 'ADMIN',
     },
   });
 
-  // Create sample hotels
-  const hotels = await Promise.all([
-    prisma.hotel.upsert({
-      where: { id: 'hotel-1' },
+  // Create regular user
+  const userHashedPassword = await bcrypt.hash('user123', 12);
+  const regularUser = await prisma.user.upsert({
+    where: { email: 'user@example.com' },
+    update: {},
+    create: {
+      email: 'user@example.com',
+      name: 'Regular User',
+      hashedPassword: userHashedPassword,
+      role: 'USER',
+    },
+  });
+
+  // Create the resort
+  const resort = await prisma.resort.upsert({
+    where: { id: 'resort-1' },
+    update: {},
+    create: {
+      id: 'resort-1',
+      name: 'Paradise Beach Resort & Spa',
+      description: 'A luxurious beachfront resort offering the perfect blend of relaxation and adventure. Enjoy pristine beaches, world-class dining, and exceptional service in a tropical paradise.',
+      address: '123 Paradise Beach Road, Maui, Hawaii',
+      phone: '+1 (808) 555-0123',
+      email: 'info@paradisebeachresort.com',
+      website: 'https://paradisebeachresort.com',
+    },
+  });
+
+  // Create resort facilities
+  const facilities = await Promise.all([
+    prisma.facility.upsert({
+      where: { id: 'facility-1' },
       update: {},
       create: {
-        id: 'hotel-1',
-        name: 'Grand Plaza Hotel',
-        description: 'Luxury hotel in the heart of downtown with stunning city views and world-class amenities.',
-        address: '123 Main Street',
-        city: 'New York',
-        country: 'USA',
-        ownerId: user.id,
+        id: 'facility-1',
+        name: 'Infinity Pool',
+        description: 'Stunning infinity pool overlooking the ocean with swim-up bar',
+        facilityType: 'POOL',
+        resortId: resort.id,
       },
     }),
-    prisma.hotel.upsert({
-      where: { id: 'hotel-2' },
+    prisma.facility.upsert({
+      where: { id: 'facility-2' },
       update: {},
       create: {
-        id: 'hotel-2',
-        name: 'Seaside Resort & Spa',
-        description: 'Beachfront resort offering relaxation and adventure with private beach access.',
-        address: '456 Ocean Drive',
-        city: 'Miami',
-        country: 'USA',
-        ownerId: user.id,
+        id: 'facility-2',
+        name: 'Ocean View Restaurant',
+        description: 'Fine dining restaurant serving fresh local cuisine with ocean views',
+        facilityType: 'RESTAURANT',
+        resortId: resort.id,
       },
     }),
-    prisma.hotel.upsert({
-      where: { id: 'hotel-3' },
+    prisma.facility.upsert({
+      where: { id: 'facility-3' },
       update: {},
       create: {
-        id: 'hotel-3',
-        name: 'Mountain View Lodge',
-        description: 'Cozy mountain retreat with panoramic views and outdoor activities.',
-        address: '789 Mountain Road',
-        city: 'Denver',
-        country: 'USA',
-        ownerId: user.id,
+        id: 'facility-3',
+        name: 'Tropical Spa',
+        description: 'Full-service spa offering massages, facials, and wellness treatments',
+        facilityType: 'SPA',
+        resortId: resort.id,
+      },
+    }),
+    prisma.facility.upsert({
+      where: { id: 'facility-4' },
+      update: {},
+      create: {
+        id: 'facility-4',
+        name: 'Fitness Center',
+        description: 'Modern gym with cardio equipment, weights, and personal training',
+        facilityType: 'GYM',
+        resortId: resort.id,
       },
     }),
   ]);
 
-  // Create amenities
-  const amenities = await Promise.all([
-    prisma.amenity.upsert({
-      where: { name: 'WiFi' },
-      update: {},
-      create: { name: 'WiFi' },
-    }),
-    prisma.amenity.upsert({
-      where: { name: 'Air Conditioning' },
-      update: {},
-      create: { name: 'Air Conditioning' },
-    }),
-    prisma.amenity.upsert({
-      where: { name: 'TV' },
-      update: {},
-      create: { name: 'TV' },
-    }),
-    prisma.amenity.upsert({
-      where: { name: 'Mini Bar' },
-      update: {},
-      create: { name: 'Mini Bar' },
-    }),
-    prisma.amenity.upsert({
-      where: { name: 'Balcony' },
-      update: {},
-      create: { name: 'Balcony' },
-    }),
-    prisma.amenity.upsert({
-      where: { name: 'Ocean View' },
-      update: {},
-      create: { name: 'Ocean View' },
-    }),
-  ]);
+  // Define amenities
+  const amenities = ['WiFi', 'Air Conditioning', 'TV', 'Mini Bar', 'Balcony', 'Ocean View'];
 
-  // Create rooms for each hotel
+  // Create resort rooms
   const rooms = await Promise.all([
-    // Grand Plaza Hotel rooms
     prisma.room.upsert({
       where: { id: 'room-1' },
       update: {},
       create: {
         id: 'room-1',
-        hotelId: hotels[0].id,
-        name: 'Deluxe King Room',
-        description: 'Spacious room with king bed and city views',
-        priceCents: 25000, // $250
+        resortId: resort.id,
+        name: 'Ocean View Deluxe',
+        description: 'Spacious room with king bed and stunning ocean views from private balcony',
+        price: 350, // $350
         capacity: 2,
+        roomType: 'DELUXE',
       },
     }),
     prisma.room.upsert({
@@ -114,24 +116,25 @@ async function main() {
       update: {},
       create: {
         id: 'room-2',
-        hotelId: hotels[0].id,
-        name: 'Executive Suite',
-        description: 'Luxury suite with separate living area',
-        priceCents: 45000, // $450
+        resortId: resort.id,
+        name: 'Beachfront Suite',
+        description: 'Luxury suite with separate living area and direct beach access',
+        price: 550, // $550
         capacity: 4,
+        roomType: 'SUITE',
       },
     }),
-    // Seaside Resort rooms
     prisma.room.upsert({
       where: { id: 'room-3' },
       update: {},
       create: {
         id: 'room-3',
-        hotelId: hotels[1].id,
-        name: 'Ocean View Room',
-        description: 'Room with direct ocean views and balcony',
-        priceCents: 35000, // $350
-        capacity: 2,
+        resortId: resort.id,
+        name: 'Garden Villa',
+        description: 'Private villa surrounded by tropical gardens with plunge pool',
+        price: 750, // $750
+        capacity: 6,
+        roomType: 'VILLA',
       },
     }),
     prisma.room.upsert({
@@ -139,36 +142,25 @@ async function main() {
       update: {},
       create: {
         id: 'room-4',
-        hotelId: hotels[1].id,
-        name: 'Family Suite',
-        description: 'Large suite perfect for families',
-        priceCents: 55000, // $550
-        capacity: 6,
+        resortId: resort.id,
+        name: 'Standard Room',
+        description: 'Comfortable room with all essential amenities',
+        price: 250, // $250
+        capacity: 2,
+        roomType: 'STANDARD',
       },
     }),
-    // Mountain View Lodge rooms
     prisma.room.upsert({
       where: { id: 'room-5' },
       update: {},
       create: {
         id: 'room-5',
-        hotelId: hotels[2].id,
-        name: 'Cozy Cabin',
-        description: 'Rustic cabin with mountain views',
-        priceCents: 18000, // $180
-        capacity: 2,
-      },
-    }),
-    prisma.room.upsert({
-      where: { id: 'room-6' },
-      update: {},
-      create: {
-        id: 'room-6',
-        hotelId: hotels[2].id,
-        name: 'Mountain Suite',
-        description: 'Luxury suite with panoramic mountain views',
-        priceCents: 32000, // $320
-        capacity: 4,
+        resortId: resort.id,
+        name: 'Family Suite',
+        description: 'Large suite perfect for families with connecting rooms',
+        price: 650, // $650
+        capacity: 6,
+        roomType: 'SUITE',
       },
     }),
   ]);
@@ -178,42 +170,43 @@ async function main() {
     // WiFi to all rooms
     ...rooms.map(room => 
       prisma.roomAmenity.upsert({
-        where: { roomId_amenityId: { roomId: room.id, amenityId: amenities[0].id } },
+        where: { roomId_amenity: { roomId: room.id, amenity: amenities[0] } },
         update: {},
-        create: { roomId: room.id, amenityId: amenities[0].id },
+        create: { roomId: room.id, amenity: amenities[0] },
       })
     ),
     // Air Conditioning to all rooms
     ...rooms.map(room => 
       prisma.roomAmenity.upsert({
-        where: { roomId_amenityId: { roomId: room.id, amenityId: amenities[1].id } },
+        where: { roomId_amenity: { roomId: room.id, amenity: amenities[1] } },
         update: {},
-        create: { roomId: room.id, amenityId: amenities[1].id },
+        create: { roomId: room.id, amenity: amenities[1] },
       })
     ),
     // TV to all rooms
     ...rooms.map(room => 
       prisma.roomAmenity.upsert({
-        where: { roomId_amenityId: { roomId: room.id, amenityId: amenities[2].id } },
+        where: { roomId_amenity: { roomId: room.id, amenity: amenities[2] } },
         update: {},
-        create: { roomId: room.id, amenityId: amenities[2].id },
+        create: { roomId: room.id, amenity: amenities[2] },
       })
     ),
-    // Ocean View to Seaside Resort rooms
+    // Ocean View to specific rooms
     prisma.roomAmenity.upsert({
-      where: { roomId_amenityId: { roomId: rooms[2].id, amenityId: amenities[5].id } },
+      where: { roomId_amenity: { roomId: rooms[0].id, amenity: amenities[5] } },
       update: {},
-      create: { roomId: rooms[2].id, amenityId: amenities[5].id },
+      create: { roomId: rooms[0].id, amenity: amenities[5] },
     }),
     prisma.roomAmenity.upsert({
-      where: { roomId_amenityId: { roomId: rooms[3].id, amenityId: amenities[5].id } },
+      where: { roomId_amenity: { roomId: rooms[1].id, amenity: amenities[5] } },
       update: {},
-      create: { roomId: rooms[3].id, amenityId: amenities[5].id },
+      create: { roomId: rooms[1].id, amenity: amenities[5] },
     }),
   ]);
 
   console.log('Database seeded successfully!');
-  console.log('Test user: test@example.com / password123');
+  console.log('Admin user: test@example.com / password123');
+  console.log('Regular user: user@example.com / user123');
 }
 
 main()

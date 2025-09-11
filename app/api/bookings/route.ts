@@ -13,20 +13,54 @@ const BookingInputSchema = z.object({
   numGuests: z.number().int().positive(),
 });
 
+// Get user's bookings
+export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { userId: session.user.id },
+      include: {
+        room: {
+          include: {
+            resort: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const json = await req.json().catch(() => null);
-  const parsed = BookingInputSchema.safeParse(json);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Invalid input", details: parsed.error.flatten() },
-      { status: 400 }
-    );
-  }
+  try {
+    const json = await req.json();
+    console.log("Booking request data:", json);
+    
+    const parsed = BookingInputSchema.safeParse(json);
+    if (!parsed.success) {
+      console.error("Validation error:", parsed.error.flatten());
+      return NextResponse.json(
+        { error: "Invalid input", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
 
   const { roomId, checkIn, checkOut, numGuests } = parsed.data;
   const checkInDate = parseISO(checkIn);
@@ -56,7 +90,17 @@ export async function POST(req: Request) {
   }
 
   const nights = Math.max(1, differenceInCalendarDays(checkOutDate, checkInDate));
-  const totalCents = nights * room.priceCents;
+  const totalPrice = nights * room.price;
+
+  console.log("Creating booking with data:", {
+    userId: session.user.id,
+    roomId,
+    checkIn: checkInDate,
+    checkOut: checkOutDate,
+    guests: numGuests,
+    totalPrice,
+    status: "PENDING",
+  });
 
   const booking = await prisma.booking.create({
     data: {
@@ -64,13 +108,22 @@ export async function POST(req: Request) {
       roomId,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      numGuests,
-      totalCents,
+      guests: numGuests,
+      totalPrice,
       status: "PENDING",
     },
   });
 
+  console.log("Booking created successfully:", booking.id);
   return NextResponse.json({ booking });
+  
+  } catch (error) {
+    console.error("Booking creation error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
 
 

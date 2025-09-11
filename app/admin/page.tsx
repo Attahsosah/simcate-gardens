@@ -21,8 +21,8 @@ export default async function AdminDashboardPage() {
   }
 
   // Get admin statistics
-  const [hotels, bookings, users] = await Promise.all([
-    prisma.hotel.count(),
+  const [resort, bookings, users] = await Promise.all([
+    prisma.resort.findFirst(),
     prisma.booking.count(),
     prisma.user.count(),
   ]);
@@ -34,21 +34,23 @@ export default async function AdminDashboardPage() {
       user: true,
       room: {
         include: {
-          hotel: true,
+          resort: true,
         },
       },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  // Get hotels with room counts
-  const hotelsWithRooms = await prisma.hotel.findMany({
+  // Get resort with room counts
+  const resortWithRooms = await prisma.resort.findFirst({
     include: {
       _count: {
         select: { rooms: true },
       },
+      rooms: {
+        orderBy: { price: "asc" },
+      },
     },
-    orderBy: { createdAt: "desc" },
   });
 
   return (
@@ -68,8 +70,8 @@ export default async function AdminDashboardPage() {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-700">Total Hotels</p>
-              <p className="text-2xl font-bold text-gray-900">{hotels}</p>
+              <p className="text-sm font-medium text-gray-700">Resort</p>
+              <p className="text-2xl font-bold text-gray-900">{resort ? 'Active' : 'Not Found'}</p>
             </div>
           </div>
         </div>
@@ -122,7 +124,7 @@ export default async function AdminDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900">
-                      {booking.room.hotel.name} - {booking.room.name}
+                      {booking.room.resort.name} - {booking.room.name}
                     </p>
                     <p className="text-sm text-gray-700">
                       {booking.user.name || booking.user.email}
@@ -146,41 +148,66 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Hotels Management */}
+        {/* Resort Management */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Hotels</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Resort</h2>
             <Link
-              href="/admin/hotels"
+              href="/admin/resort"
               className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
             >
-              Manage hotels
+              Manage resort
             </Link>
           </div>
           
-          <div className="space-y-4">
-            {hotelsWithRooms.map((hotel) => (
-              <div key={hotel.id} className="border border-gray-200 rounded-lg p-4">
+          {resortWithRooms ? (
+            <div className="space-y-4">
+              <div className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">{hotel.name}</p>
+                    <p className="font-medium text-gray-900">{resortWithRooms.name}</p>
                     <p className="text-sm text-gray-700">
-                      {hotel.city}, {hotel.country}
+                      {resortWithRooms.address}
                     </p>
                     <p className="text-sm text-gray-600">
-                      {hotel._count.rooms} room{hotel._count.rooms !== 1 ? 's' : ''}
+                      {resortWithRooms._count.rooms} room{resortWithRooms._count.rooms !== 1 ? 's' : ''}
                     </p>
                   </div>
                   <Link
-                    href={`/admin/hotels/${hotel.id}`}
+                    href="/admin/resort/edit"
                     className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
                   >
                     Edit
                   </Link>
                 </div>
               </div>
-            ))}
-          </div>
+              
+              {/* Room List */}
+              <div className="mt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-3">Rooms</h3>
+                <div className="space-y-2">
+                  {resortWithRooms.rooms.map((room) => (
+                    <div key={room.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-gray-900">{room.name}</p>
+                        <p className="text-sm text-gray-600">{room.roomType} • ${room.price.toFixed(2)}/night</p>
+                      </div>
+                      <Link
+                        href={`/admin/rooms/${room.id}`}
+                        className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+                      >
+                        Edit
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No resort found. Please create a resort first.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -189,13 +216,13 @@ export default async function AdminDashboardPage() {
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
-            href="/admin/hotels/new"
+            href="/admin/rooms/new"
             className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Add Hotel
+            Add Room
           </Link>
           <Link
             href="/admin/bookings"

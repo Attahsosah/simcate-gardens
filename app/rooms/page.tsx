@@ -1,0 +1,66 @@
+import prisma from "@/lib/prisma";
+import Link from "next/link";
+
+export default async function RoomsPage() {
+  const rooms = await prisma.room.findMany({
+    include: {
+      resort: true,
+      amenities: true,
+    },
+    orderBy: { price: "asc" },
+  });
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-900 min-h-screen">
+      <div className="mb-8 animate-fade-in">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Rooms</h1>
+        <p className="text-xl text-gray-300">Choose from our selection of comfortable accommodations</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {rooms.map((room, index) => (
+          <div key={room.id} className="card-modern overflow-hidden animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-3">{room.name}</h3>
+              <p className="text-gray-300 text-sm mb-4 leading-relaxed">{room.description}</p>
+              
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-gray-400">Up to {room.capacity} guests</span>
+                <span className="text-lg font-semibold text-indigo-400">
+                  ${room.price.toFixed(2)}
+                </span>
+              </div>
+
+              {room.amenities.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-1">
+                    {room.amenities.slice(0, 3).map((amenityItem) => (
+                      <span
+                        key={amenityItem.id}
+                        className="inline-flex px-2 py-1 text-xs rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                      >
+                        {amenityItem.amenity}
+                      </span>
+                    ))}
+                    {room.amenities.length > 3 && (
+                      <span className="inline-flex px-2 py-1 text-xs rounded-full bg-gray-600/20 text-gray-300 border border-gray-600/30">
+                        +{room.amenities.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <Link
+                href={`/rooms/${room.id}`}
+                className="btn-primary w-full text-center"
+              >
+                View Details
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

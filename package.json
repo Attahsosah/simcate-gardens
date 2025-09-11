@@ -9,9 +9,12 @@
     "lint": "next lint",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "type-check": "tsc --noEmit",
+    "deploy": "./deploy.sh",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -22,6 +25,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
+    "lucide-react": "^0.542.0",
     "next": "15.4.6",
     "next-auth": "^4.24.11",
     "react": "19.1.0",

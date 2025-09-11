@@ -1,6 +1,6 @@
 "use client";
 import { DateRange, DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
+import "./DateRangePicker.css";
 import { useState } from "react";
 
 export default function DateRangePicker({

@@ -1,18 +1,20 @@
 import type { NextAuthOptions } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  pages: {
+    signIn: '/signin',
+    signUp: '/signup',
+  },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    // }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -20,24 +22,58 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-        if (!user?.hashedPassword) return null;
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.hashedPassword
-        );
-        if (!isValid) return null;
-        return user;
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log("Missing credentials");
+            return null;
+          }
+          
+          console.log("Attempting to authorize user:", credentials.email);
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
+          
+          if (!user?.hashedPassword) {
+            console.log("User not found or no password set");
+            return null;
+          }
+          
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.hashedPassword
+          );
+          
+          if (!isValid) {
+            console.log("Invalid password");
+            return null;
+          }
+          
+          console.log("User authorized successfully:", user.email);
+          return user;
+        } catch (error) {
+          console.error("Authorization error:", error);
+          return null;
+        }
       },
     }),
   ],
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (token?.sub) {
         session.user.id = token.sub;
+      }
+      if (token?.id) {
+        session.user.id = token.id;
+      }
+      if (token?.role) {
+        session.user.role = token.role;
       }
       return session;
     },

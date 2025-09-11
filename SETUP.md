@@ -1,4 +1,4 @@
-# Hotel Booking App Setup Guide
+# Simcate Gardens Booking App Setup Guide
 
 ## Quick Start
 
@@ -33,16 +33,16 @@ The seed script creates a test account with admin privileges:
 
 ### ✅ Core Features
 - User authentication (NextAuth.js)
-- Hotel browsing and search
+- Resort information and facilities
 - Room booking with date selection
 - Booking management dashboard
-- **Admin dashboard** for hotel and booking management
+- **Admin dashboard** for resort and booking management
 - Responsive design with Tailwind CSS
 
 ### 🏨 Sample Data
-- 3 hotels with different locations
-- 6 rooms with various amenities
-- Test user account
+- Simcate Gardens with facilities (pool, restaurant, spa, gym)
+- 5 room types (Standard, Deluxe, Suite, Villa, Family)
+- Test user account with admin privileges
 
 ### 🎨 UI/UX
 - Modern, responsive design
@@ -56,19 +56,21 @@ The seed script creates a test account with admin privileges:
 The app uses SQLite for development (stored in `prisma/dev.db`). The database includes:
 
 - **Users:** Authentication and user management
-- **Hotels:** Hotel information and locations
+- **Resort:** Single resort with facilities and information
 - **Rooms:** Room details, pricing, and capacity
 - **Bookings:** User reservations with dates and status
-- **Amenities:** Room features and facilities
+- **Facilities:** Resort facilities (pool, restaurant, spa, gym)
+- **Facility Bookings:** Facility reservations
 
 ## Admin Dashboard
 
 The admin dashboard is available at `/admin` and includes:
 
-- **Statistics Overview:** Total hotels, bookings, and users
+- **Statistics Overview:** Resort status, bookings, and users
 - **Recent Bookings:** Latest booking activity
-- **Hotel Management:** View and edit hotels
-- **Quick Actions:** Add hotels, manage bookings, manage users
+- **Resort Management:** View and edit resort information
+- **Room Management:** View and edit room details
+- **Quick Actions:** Add rooms, manage bookings, manage users
 
 **Access:** Only users with ADMIN role can access the admin dashboard.
 
@@ -77,16 +79,19 @@ The admin dashboard is available at `/admin` and includes:
 To continue development, consider adding:
 
 1. **Enhanced Admin Features:**
-   - Hotel/room creation and editing forms
+   - Resort information editing forms
+   - Room creation and editing forms
+   - Facility booking management
    - Booking approval system
    - User role management
    - Analytics and reporting
 
 2. **Enhanced Features:**
-   - Search and filtering
-   - Image uploads
+   - Facility booking system
+   - Image uploads for resort and rooms
    - Review system
    - Payment integration
+   - Special requests handling
 
 3. **Production Setup:**
    - PostgreSQL database
