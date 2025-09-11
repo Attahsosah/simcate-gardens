@@ -22,6 +22,9 @@ prisma/dev.db
 prisma/dev.db-journal
 prisma/prisma/
 
+# Prisma generated files
+app/generated/
+
 # Logs
 *.log
 
