@@ -76,7 +76,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Resort Information</h3>
             <div className="space-y-2 text-sm text-gray-600">
               <p><span className="font-medium">Resort:</span> {facility.resort.name}</p>
-              <p><span className="font-medium">Location:</span> {facility.resort.address}, {facility.resort.city}, {facility.resort.country}</p>
+              <p><span className="font-medium">Location:</span> {facility.resort.address}</p>
               {facility.resort.phone && (
                 <p><span className="font-medium">Phone:</span> {facility.resort.phone}</p>
               )}
