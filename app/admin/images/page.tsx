@@ -56,7 +56,7 @@ export default function AdminImagesPage() {
         const resortData = await resortResponse.json();
         // Handle both single resort and array of resorts
         if (Array.isArray(resortData)) {
-          entities.push(...resortData.map((resort: any) => ({ id: resort.id, name: resort.name })));
+          entities.push(...resortData.map((resort: { id: string; name: string }) => ({ id: resort.id, name: resort.name })));
         } else {
           entities.push({ id: resortData.id, name: resortData.name });
         }
@@ -64,7 +64,7 @@ export default function AdminImagesPage() {
 
       if (roomsResponse.ok) {
         const roomsData = await roomsResponse.json();
-        entities.push(...roomsData.map((room: any) => ({ id: room.id, name: room.name })));
+        entities.push(...roomsData.map((room: { id: string; name: string }) => ({ id: room.id, name: room.name })));
       }
 
       console.log('Fetched entities:', entities); // Debug log

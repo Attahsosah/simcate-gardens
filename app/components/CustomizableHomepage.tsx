@@ -41,10 +41,63 @@ interface Feature {
   isActive: boolean;
 }
 
+interface Facility {
+  id: string;
+  name: string;
+  description?: string;
+  facilityType: 'POOL' | 'SPA' | 'GYM' | 'RESTAURANT' | 'BAR' | 'CONFERENCE_ROOM' | 'TENNIS_COURT' | 'GOLF_COURSE' | 'BEACH_ACCESS' | 'PARKING';
+  isActive: boolean;
+  resortId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Room {
+  id: string;
+  name: string;
+  description: string;
+  roomType: string;
+  capacity: number;
+  price: number;
+  previewImageUrl?: string;
+  amenities: Array<{
+    amenity: string;
+  }>;
+}
+
+interface ResortImage {
+  id: string;
+  url: string;
+  caption?: string;
+  resortId: string;
+  createdAt: string;
+}
+
+interface RestaurantFeature {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface RestaurantDetail {
+  title: string;
+  subtitle: string;
+  icon: string;
+}
+
+interface RestaurantCustomization {
+  features: RestaurantFeature[];
+  details: RestaurantDetail[];
+  content: {
+    title: string;
+    subtitle: string;
+  };
+}
+
 interface CustomizableHomepageProps {
-  facilities: any[];
-  rooms: any[];
-  resortImages: any[];
+  facilities: Facility[];
+  rooms: Room[];
+  resortImages: ResortImage[];
 }
 
 export default function CustomizableHomepage({ facilities, rooms, resortImages }: CustomizableHomepageProps) {
@@ -58,7 +111,7 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [restaurantImages, setRestaurantImages] = useState<SectionImage[]>([]);
-  const [restaurantCustomization, setRestaurantCustomization] = useState<any>(null);
+  const [restaurantCustomization, setRestaurantCustomization] = useState<RestaurantCustomization | null>(null);
 
   useEffect(() => {
     fetchCustomizationData();
@@ -331,7 +384,7 @@ export default function CustomizableHomepage({ facilities, rooms, resortImages }
               <div className="grid grid-cols-2 gap-4">
                 {(() => {
                   const featuresToShow = restaurantCustomization?.features && restaurantCustomization.features.length > 0 
-                    ? restaurantCustomization.features.map((feature: any) => ({
+                    ? restaurantCustomization.features.map((feature: RestaurantFeature) => ({
                         ...feature,
                         gradient: getGradientForFeature(feature.title)
                       }))

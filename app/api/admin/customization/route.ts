@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     // Update section images
     if (sectionImages) {
       // First, delete all existing images for the sections being updated
-      const sectionsToUpdate = [...new Set(sectionImages.map((img: any) => img.section))];
+      const sectionsToUpdate = [...new Set(sectionImages.map((img: { section: string }) => img.section))];
       await prisma.sectionImage.deleteMany({
         where: { section: { in: sectionsToUpdate } }
       });
