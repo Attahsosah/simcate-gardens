@@ -9,8 +9,8 @@
     }
   },
   "env": {
-    "NEXTAUTH_URL": "@nextauth_url",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "DATABASE_URL": "@database_url"
+    "NEXTAUTH_URL": "https://simcate-gardens.vercel.app",
+    "NEXTAUTH_SECRET": "pd/7L2K4YXlwto9/UD8U+36ejNQASOBPWmmpHVuw9no=",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_fWm9NrdxH0ok@ep-shiny-snow-addlqwqu-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
   }
 }
