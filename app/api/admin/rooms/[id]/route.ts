@@ -100,6 +100,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const { id } = await params;
+
     // Check if room has any bookings
     const existingBookings = await prisma.booking.findFirst({
       where: { roomId: id },
