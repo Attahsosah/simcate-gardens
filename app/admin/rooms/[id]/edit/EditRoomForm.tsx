@@ -19,7 +19,7 @@ export default function EditRoomForm({ room, amenities }: EditRoomFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: room.name,
-    description: room.description,
+    description: room.description || "",
     price: room.price.toString(),
     capacity: room.capacity.toString(),
     roomType: room.roomType,
