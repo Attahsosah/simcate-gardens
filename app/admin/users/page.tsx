@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { UserRole } from "@prisma/client";
+import { Role } from "@prisma/client";
 
 interface User {
   id: string;
   name: string | null;
   email: string;
-  role: UserRole;
+  role: Role;
   createdAt: string;
   _count: {
     bookings: number;
@@ -37,12 +37,12 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const roleLabels: Record<UserRole, string> = {
+  const roleLabels: Record<Role, string> = {
     USER: "User",
     ADMIN: "Admin",
   };
 
-  const roleColors: Record<UserRole, string> = {
+  const roleColors: Record<Role, string> = {
     USER: "bg-gray-100 text-gray-800",
     ADMIN: "bg-purple-100 text-purple-800",
   };
