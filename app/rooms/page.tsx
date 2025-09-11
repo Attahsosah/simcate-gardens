@@ -2,13 +2,39 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function RoomsPage() {
-  const rooms = await prisma.room.findMany({
-    include: {
-      resort: true,
-      amenities: true,
-    },
-    orderBy: { price: "asc" },
-  });
+  let rooms = [];
+  
+  try {
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-900 min-h-screen">
+          <div className="mb-8 animate-fade-in">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Rooms</h1>
+            <p className="text-xl text-gray-300">Room information will be available when the database is connected.</p>
+          </div>
+        </div>
+      );
+    }
+
+    rooms = await prisma.room.findMany({
+      include: {
+        resort: true,
+        amenities: true,
+      },
+      orderBy: { price: "asc" },
+    });
+  } catch (error) {
+    console.error('Error fetching rooms data:', error);
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-900 min-h-screen">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Rooms</h1>
+          <p className="text-xl text-gray-300">Unable to load room information at this time.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-900 min-h-screen">

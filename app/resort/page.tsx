@@ -2,24 +2,50 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function ResortPage() {
-  const resort = await prisma.resort.findFirst({
-    include: {
-      rooms: {
-        orderBy: { price: "asc" },
-      },
-      facilities: {
-        where: { isActive: true },
-        orderBy: { name: "asc" },
-      },
-    },
-  });
+  let resort = null;
+  
+  try {
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Information</h1>
+            <p className="text-gray-600">Resort information will be available when the database is connected.</p>
+          </div>
+        </div>
+      );
+    }
 
-  if (!resort) {
+    resort = await prisma.resort.findFirst({
+      include: {
+        rooms: {
+          orderBy: { price: "asc" },
+        },
+        facilities: {
+          where: { isActive: true },
+          orderBy: { name: "asc" },
+        },
+      },
+    });
+
+    if (!resort) {
+      return (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Not Found</h1>
+            <p className="text-gray-600">The resort information is not available.</p>
+          </div>
+        </div>
+      );
+    }
+  } catch (error) {
+    console.error('Error fetching resort data:', error);
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Not Found</h1>
-          <p className="text-gray-600">The resort information is not available.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Information</h1>
+          <p className="text-gray-600">Unable to load resort information at this time.</p>
         </div>
       </div>
     );

@@ -3,6 +3,11 @@ import prisma from "@/lib/prisma";
 
 export default async function Home() {
   try {
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return <CustomizableHomepage facilities={[]} rooms={[]} resortImages={[]} />;
+    }
+
     // Fetch facilities and rooms for the homepage
     const facilities = await prisma.facility.findMany({
       where: { isActive: true },

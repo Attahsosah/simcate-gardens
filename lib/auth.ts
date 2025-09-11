@@ -4,6 +4,13 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 
+interface UserWithRole {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: {
@@ -59,7 +66,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = (user as UserWithRole).role;
         token.id = user.id;
       }
       return token;
@@ -68,10 +75,10 @@ export const authOptions: NextAuthOptions = {
       if (token?.sub) {
         session.user.id = token.sub;
       }
-      if (token?.id) {
+      if (token?.id && typeof token.id === 'string') {
         session.user.id = token.id;
       }
-      if (token?.role) {
+      if (token?.role && typeof token.role === 'string') {
         session.user.role = token.role;
       }
       return session;
