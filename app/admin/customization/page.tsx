@@ -524,7 +524,7 @@ export default function AdminCustomizationPage() {
             {Object.entries(sections).map(([key, section]) => (
               <button
                 key={key}
-                onClick={() => setActiveTab(key as any)}
+                onClick={() => setActiveTab(key as 'hero' | 'features' | 'facilities' | 'restaurant' | 'gallery' | 'rooms' | 'activities')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   activeTab === key
                     ? 'border-indigo-500 text-indigo-600'
@@ -1035,7 +1035,7 @@ function FacilityEditModal({
             </label>
             <select
               value={formData.facilityType}
-              onChange={(e) => setFormData(prev => ({ ...prev, facilityType: e.target.value as any }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, facilityType: e.target.value as 'POOL' | 'SPA' | 'GYM' | 'RESTAURANT' | 'BAR' | 'CONFERENCE_ROOM' | 'TENNIS_COURT' | 'GOLF_COURSE' | 'BEACH_ACCESS' | 'PARKING' }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             >
               {facilityTypes.map(type => (
