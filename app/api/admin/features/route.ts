@@ -29,17 +29,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, icon, position, isActive } = body;
+    const { title, description, icon, position, isActive, section } = body;
 
-    if (!title || !description) {
+    if (!title || !description || !section) {
       return NextResponse.json(
-        { error: "Title and description are required" },
+        { error: "Title, description, and section are required" },
         { status: 400 }
       );
     }
 
     const feature = await prisma.feature.create({
       data: {
+        section,
         title,
         description,
         icon: icon || "",
