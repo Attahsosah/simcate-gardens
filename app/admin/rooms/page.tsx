@@ -44,8 +44,6 @@ export default function AdminRoomsPage() {
     DELUXE: "Deluxe",
     SUITE: "Suite",
     VILLA: "Villa",
-    CABIN: "Cabin",
-    FAMILY: "Family",
   };
 
   if (isLoading) {

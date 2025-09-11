@@ -33,8 +33,6 @@ export default function EditRoomForm({ room, amenities }: EditRoomFormProps) {
     { value: "DELUXE", label: "Deluxe" },
     { value: "SUITE", label: "Suite" },
     { value: "VILLA", label: "Villa" },
-    { value: "CABIN", label: "Cabin" },
-    { value: "FAMILY", label: "Family" },
   ];
 
   const handlePreviewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
