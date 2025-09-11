@@ -10,6 +10,9 @@ out/
 build/
 dist/
 
+# Next.js build files
+.next/
+
 # Environment variables
 .env
 .env.local
