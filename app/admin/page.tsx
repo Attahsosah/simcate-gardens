@@ -71,7 +71,7 @@ export default async function AdminDashboardPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-700">Resort</p>
-              <p className="text-2xl font-bold text-gray-900">{resort ? 'Active' : 'Not Found'}</p>
+              <p className="text-2xl font-bold text-gray-900">{resort ? &apos;Active&apos; : &apos;Not Found&apos;}</p>
             </div>
           </div>
         </div>

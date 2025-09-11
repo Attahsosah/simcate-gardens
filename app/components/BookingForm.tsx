@@ -141,7 +141,7 @@ export default function BookingForm({
         {range?.from && range?.to && (
           <div className="bg-gray-50 rounded-xl p-4 space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">${price.toFixed(2)} × {getNights()} night{getNights() !== 1 ? 's' : ''}</span>
+              <span className="text-gray-600">${price.toFixed(2)} × {getNights()} night{getNights() !== 1 ? &apos;s&apos; : &apos;&apos;}</span>
               <span className="font-medium">${getTotalPrice().toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">

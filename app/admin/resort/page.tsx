@@ -16,7 +16,7 @@ export default async function AdminResortPage() {
     <div>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Resort Information</h2>
-        <p className="text-gray-600 mt-1">Manage your resort's details and settings</p>
+        <p className="text-gray-600 mt-1">Manage your resort&apos;s details and settings</p>
       </div>
 
       <div className="bg-white shadow-sm rounded-lg p-6">

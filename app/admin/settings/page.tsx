@@ -56,7 +56,7 @@ export default function AdminSettingsPage() {
     <div>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Site Settings</h2>
-        <p className="text-gray-600 mt-1">Customize your resort's appearance and functionality</p>
+        <p className="text-gray-600 mt-1">Customize your resort&apos;s appearance and functionality</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
