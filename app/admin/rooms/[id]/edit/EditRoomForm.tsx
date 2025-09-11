@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { RoomType, Amenity, Room } from "@prisma/client";
+import { RoomType, Room } from "@prisma/client";
 
 interface EditRoomFormProps {
   room: Room & {
     amenities: Array<{
-      amenity: Amenity;
+      amenity: string;
     }>;
     resort: { id: string; name: string };
   };
-  amenities: Amenity[];
+  amenities: string[];
 }
 
 export default function EditRoomForm({ room, amenities }: EditRoomFormProps) {
