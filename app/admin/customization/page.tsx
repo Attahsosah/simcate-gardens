@@ -207,7 +207,7 @@ export default function AdminCustomizationPage() {
       section: 'activities',
       title: 'Exciting Activities',
       subtitle: 'Adventure awaits at every turn',
-      description: 'From water sports and beach activities to cultural tours and wellness programs, there\'s something for everyone to enjoy.',
+      description: 'From water sports and beach activities to cultural tours and wellness programs, there&apos;s something for everyone to enjoy.',
       ctaText: 'Explore Activities',
       ctaLink: '/activities'
     }
