@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import BookingForm from "@/app/components/BookingForm";
 import ImageCarousel from "@/app/components/ImageCarousel";
+import RoomImageUpload from "@/app/components/RoomImageUpload";
 
 interface RoomPageProps {
   params: Promise<{ id: string }>;
@@ -126,6 +127,14 @@ export default async function RoomPage({ params }: RoomPageProps) {
                   </div>
                 </div>
               )}
+
+              {/* Image Upload Section */}
+              <div className="mt-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Add More Images</h3>
+                <div className="bg-gray-50 rounded-xl p-6 border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors">
+                  <RoomImageUpload roomId={room.id} />
+                </div>
+              </div>
             </div>
           </div>
 
