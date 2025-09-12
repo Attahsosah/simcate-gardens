@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import { put } from "@vercel/blob";
 
 // Upload section image
 export async function POST(request: NextRequest) {
@@ -43,22 +44,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
     // Generate unique filename
     const timestamp = Date.now();
     const fileExtension = image.name.split('.').pop();
     const filename = `section_${section}_${timestamp}.${fileExtension}`;
-    const filepath = join(uploadsDir, filename);
 
-    // Save file
-    const bytes = await image.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
+    // Check if we're in production (Vercel) or development
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+    
+    let imageUrl: string;
+    
+    if (isProduction) {
+      // Use Vercel Blob Storage in production
+      try {
+        const bytes = await image.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        
+        const blob = await put(filename, buffer, {
+          access: 'public',
+          contentType: image.type,
+        });
+        
+        imageUrl = blob.url;
+      } catch (blobError) {
+        console.error('Vercel Blob Storage error:', blobError);
+        throw new Error(`Failed to upload to cloud storage: ${blobError instanceof Error ? blobError.message : 'Unknown error'}`);
+      }
+    } else {
+      // Use local file system in development
+      const uploadsDir = join(process.cwd(), 'public', 'uploads');
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true });
+      }
+
+      const filepath = join(uploadsDir, filename);
+      const bytes = await image.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await writeFile(filepath, buffer);
+      
+      imageUrl = `/uploads/${filename}`;
+    }
 
     // Get the next position for this section
     const existingImages = await prisma.sectionImage.findMany({
@@ -67,9 +92,6 @@ export async function POST(request: NextRequest) {
       take: 1
     });
     const nextPosition = existingImages.length > 0 ? existingImages[0].position + 1 : 1;
-
-    // Save to database
-    const imageUrl = `/uploads/${filename}`;
     const savedImage = await prisma.sectionImage.create({
       data: {
         section,
