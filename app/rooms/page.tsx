@@ -7,23 +7,56 @@ export default async function RoomsPage() {
   try {
     // Check if database is available
     if (!process.env.DATABASE_URL) {
+      console.log('Database not available, using fallback content...');
       return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-900 min-h-screen">
           <div className="mb-8 animate-fade-in">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Rooms</h1>
             <p className="text-xl text-gray-300">Room information will be available when the database is connected.</p>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="card-modern overflow-hidden">
+              <img 
+                src="/uploads/room_cmenkzk2s0005s1e17zwz5qto_1756070531906.jpg" 
+                alt="Ocean View Suite"
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-white mb-3">Ocean View Suite</h3>
+                <p className="text-gray-300 text-sm mb-4">A luxurious suite with stunning ocean views</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">Up to 2 guests</span>
+                  <span className="text-lg font-semibold text-indigo-400">$299.99</span>
+                </div>
+              </div>
+            </div>
+            <div className="card-modern overflow-hidden">
+              <img 
+                src="/uploads/room_room-2_1757559742211.jpg" 
+                alt="Garden Villa"
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-white mb-3">Garden Villa</h3>
+                <p className="text-gray-300 text-sm mb-4">A peaceful villa surrounded by tropical gardens</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">Up to 4 guests</span>
+                  <span className="text-lg font-semibold text-indigo-400">$399.99</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       );
+    } else {
+      rooms = await prisma.room.findMany({
+        include: {
+          resort: true,
+          amenities: true,
+        },
+        orderBy: { price: "asc" },
+      });
     }
-
-    rooms = await prisma.room.findMany({
-      include: {
-        resort: true,
-        amenities: true,
-      },
-      orderBy: { price: "asc" },
-    });
   } catch (error) {
     console.error('Error fetching rooms data:', error);
     return (

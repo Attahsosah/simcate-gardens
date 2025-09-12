@@ -7,37 +7,45 @@ export default async function ResortPage() {
   try {
     // Check if database is available
     if (!process.env.DATABASE_URL) {
+      console.log('Database not available, using fallback content...');
       return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Information</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Paradise Beach Resort & Spa</h1>
             <p className="text-gray-600">Resort information will be available when the database is connected.</p>
+            <div className="mt-8">
+              <img 
+                src="/uploads/resort_resort-1_1756070466330.jpg" 
+                alt="Paradise Beach Resort & Spa"
+                className="mx-auto rounded-lg shadow-lg max-w-2xl"
+              />
+            </div>
           </div>
         </div>
       );
-    }
-
-    resort = await prisma.resort.findFirst({
-      include: {
-        rooms: {
-          orderBy: { price: "asc" },
+    } else {
+      resort = await prisma.resort.findFirst({
+        include: {
+          rooms: {
+            orderBy: { price: "asc" },
+          },
+          facilities: {
+            where: { isActive: true },
+            orderBy: { name: "asc" },
+          },
         },
-        facilities: {
-          where: { isActive: true },
-          orderBy: { name: "asc" },
-        },
-      },
-    });
+      });
 
-    if (!resort) {
-      return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Not Found</h1>
-            <p className="text-gray-600">The resort information is not available.</p>
+      if (!resort) {
+        return (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Resort Not Found</h1>
+              <p className="text-gray-600">The resort information is not available.</p>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
   } catch (error) {
     console.error('Error fetching resort data:', error);
