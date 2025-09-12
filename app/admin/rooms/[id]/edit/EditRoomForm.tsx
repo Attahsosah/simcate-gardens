@@ -89,7 +89,12 @@ export default function EditRoomForm({ room, amenities }: EditRoomFormProps) {
     try {
       // Upload preview image first if provided
       if (previewImage) {
-        await uploadPreviewImage();
+        try {
+          await uploadPreviewImage();
+        } catch (imageError) {
+          console.warn('Image upload failed, continuing with room update:', imageError);
+          // Continue with room update even if image upload fails
+        }
       }
 
       const response = await fetch(`/api/admin/rooms/${room.id}`, {
