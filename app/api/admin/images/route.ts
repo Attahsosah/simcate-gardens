@@ -61,15 +61,20 @@ export async function POST(request: NextRequest) {
     
     if (isProduction) {
       // Use Vercel Blob Storage in production
-      const bytes = await image.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      
-      const blob = await put(filename, buffer, {
-        access: 'public',
-        contentType: image.type,
-      });
-      
-      imageUrl = blob.url;
+      try {
+        const bytes = await image.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        
+        const blob = await put(filename, buffer, {
+          access: 'public',
+          contentType: image.type,
+        });
+        
+        imageUrl = blob.url;
+      } catch (blobError) {
+        console.error('Vercel Blob Storage error:', blobError);
+        throw new Error(`Failed to upload to cloud storage: ${blobError instanceof Error ? blobError.message : 'Unknown error'}`);
+      }
     } else {
       // Use local file system in development
       const uploadsDir = join(process.cwd(), 'public', 'uploads');
