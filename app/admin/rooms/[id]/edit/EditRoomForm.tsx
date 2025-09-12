@@ -111,7 +111,8 @@ export default function EditRoomForm({ room, amenities }: EditRoomFormProps) {
         alert(`Error: ${error.error || 'Unknown error occurred'}`);
       }
     } catch (error) {
-      alert("An error occurred while updating the room");
+      console.error("Error updating room:", error);
+      alert(`An error occurred while updating the room: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
