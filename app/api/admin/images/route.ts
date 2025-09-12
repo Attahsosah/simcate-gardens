@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import { put } from "@vercel/blob";
 
 // Upload image
 export async function POST(request: NextRequest) {
@@ -48,25 +49,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
     // Generate unique filename
     const timestamp = Date.now();
     const fileExtension = image.name.split('.').pop();
     const filename = `${type}_${entityId}_${timestamp}.${fileExtension}`;
-    const filepath = join(uploadsDir, filename);
 
-    // Save file
-    const bytes = await image.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
+    // Check if we're in production (Vercel) or development
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+    
+    let imageUrl: string;
+    
+    if (isProduction) {
+      // Use Vercel Blob Storage in production
+      const bytes = await image.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      
+      const blob = await put(filename, buffer, {
+        access: 'public',
+        contentType: image.type,
+      });
+      
+      imageUrl = blob.url;
+    } else {
+      // Use local file system in development
+      const uploadsDir = join(process.cwd(), 'public', 'uploads');
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true });
+      }
 
-    // Save to database
-    const imageUrl = `/uploads/${filename}`;
+      const filepath = join(uploadsDir, filename);
+      const bytes = await image.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await writeFile(filepath, buffer);
+      
+      imageUrl = `/uploads/${filename}`;
+    }
     let savedImage;
 
     if (type === 'resort') {
