@@ -254,7 +254,7 @@ export default function ImageManager({
           </div>
         ) : (
           <div className="text-center">
-            <p className="text-gray-600 text-sm italic">
+            <p className="text-gray-800 text-sm italic font-medium">
               {images[currentIndex].caption || "No caption"}
             </p>
           </div>
