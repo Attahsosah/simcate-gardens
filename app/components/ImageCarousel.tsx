@@ -60,6 +60,7 @@ export default function ImageCarousel({ images, alt, className = "" }: ImageCaro
           fill
           className="object-cover transition-opacity duration-300"
           priority={currentIndex === 0}
+          unoptimized={images[currentIndex].url.includes('blob.vercel-storage.com')}
         />
         
         {/* Gradient Overlay */}
@@ -116,6 +117,7 @@ export default function ImageCarousel({ images, alt, className = "" }: ImageCaro
                 alt={image.caption || `${alt} thumbnail ${index + 1}`}
                 fill
                 className="object-cover"
+                unoptimized={image.url.includes('blob.vercel-storage.com')}
               />
             </button>
           ))}
