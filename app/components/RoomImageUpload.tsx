@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 
 interface RoomImageUploadProps {
   roomId: string;
+  onImageUploaded?: () => void;
 }
 
-export default function RoomImageUpload({ roomId }: RoomImageUploadProps) {
+export default function RoomImageUpload({ roomId, onImageUploaded }: RoomImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const router = useRouter();
@@ -29,8 +30,12 @@ export default function RoomImageUpload({ roomId }: RoomImageUploadProps) {
       });
 
       if (response.ok) {
-        // Force a hard refresh to show the new image
-        window.location.reload();
+        // Call the callback if provided, otherwise refresh the page
+        if (onImageUploaded) {
+          onImageUploaded();
+        } else {
+          window.location.reload();
+        }
       } else {
         const error = await response.json();
         alert(`Error uploading image: ${error.error || 'Unknown error'}`);

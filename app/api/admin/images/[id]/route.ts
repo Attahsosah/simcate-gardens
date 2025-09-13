@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { unlink } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
 
-// Delete image
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -14,63 +10,75 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const { id: imageId } = await params;
 
-    const { id } = await params;
-
-    // Try to find the image in both tables
-    let image: Awaited<ReturnType<typeof prisma.resortImage.findUnique>> | Awaited<ReturnType<typeof prisma.roomImage.findUnique>> = await prisma.resortImage.findUnique({
-      where: { id },
-      include: { resort: true },
+    // Find the image to get its URL for potential cleanup
+    const image = await prisma.roomImage.findUnique({
+      where: { id: imageId },
     });
 
-    let imageType = 'resort';
-
     if (!image) {
-      image = await prisma.roomImage.findUnique({
-        where: { id },
-        include: { room: true },
-      });
-      imageType = 'room';
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
     }
 
-    if (!image) {
-      return NextResponse.json(
-        { error: "Image not found" },
-        { status: 404 }
-      );
-    }
+    // Delete the image from database
+    await prisma.roomImage.delete({
+      where: { id: imageId },
+    });
 
-    // Delete file from filesystem
-    const filepath = join(process.cwd(), 'public', image.url);
-    if (existsSync(filepath)) {
-      await unlink(filepath);
-    }
-
-    // Delete from database
-    if (imageType === 'resort') {
-      await prisma.resortImage.delete({
-        where: { id },
-      });
-    } else {
-      await prisma.roomImage.delete({
-        where: { id },
-      });
-    }
+    // Note: We don't delete from Vercel Blob Storage as it's not critical
+    // and the storage will clean up unused files automatically
 
     return NextResponse.json({ 
-      message: "Image deleted successfully" 
+      message: 'Image deleted successfully',
+      deletedImage: {
+        id: image.id,
+        url: image.url
+      }
     });
+
   } catch (error) {
-    console.error("Error deleting image:", error);
+    console.error('Error deleting image:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Failed to delete image' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id: imageId } = await params;
+    const { caption } = await request.json();
+
+    // Update the image caption
+    const updatedImage = await prisma.roomImage.update({
+      where: { id: imageId },
+      data: { caption },
+    });
+
+    return NextResponse.json({ 
+      message: 'Image updated successfully',
+      image: updatedImage
+    });
+
+  } catch (error) {
+    console.error('Error updating image:', error);
+    return NextResponse.json(
+      { error: 'Failed to update image' },
       { status: 500 }
     );
   }
