@@ -237,7 +237,7 @@ export default function ImageManager({
               value={captionValue}
               onChange={(e) => setCaptionValue(e.target.value)}
               placeholder="Enter image caption..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 placeholder-gray-500"
             />
             <button
               onClick={() => handleSaveCaption(images[currentIndex].id)}
