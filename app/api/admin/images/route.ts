@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     const type = formData.get('type') as string;
     const entityId = formData.get('entityId') as string || formData.get('id') as string;
     const caption = formData.get('caption') as string;
+    const replaceImageId = formData.get('replaceImageId') as string;
 
     if (!image || !type || !entityId) {
       return NextResponse.json(
@@ -92,27 +93,69 @@ export async function POST(request: NextRequest) {
     let savedImage;
 
     if (type === 'resort') {
-      savedImage = await prisma.resortImage.create({
-        data: {
-          resortId: entityId,
-          url: imageUrl,
-          caption: caption || null,
-        },
-        include: {
-          resort: true,
-        },
-      });
+      if (replaceImageId) {
+        // Replace existing image
+        savedImage = await prisma.resortImage.update({
+          where: { id: replaceImageId },
+          data: {
+            url: imageUrl,
+            caption: caption || null,
+          },
+          include: {
+            resort: true,
+          },
+        });
+      } else {
+        // Create new image
+        savedImage = await prisma.resortImage.create({
+          data: {
+            resortId: entityId,
+            url: imageUrl,
+            caption: caption || null,
+          },
+          include: {
+            resort: true,
+          },
+        });
+      }
     } else if (type === 'room') {
-      savedImage = await prisma.roomImage.create({
-        data: {
-          roomId: entityId,
-          url: imageUrl,
-          caption: caption || null,
-        },
-        include: {
-          room: true,
-        },
-      });
+      if (replaceImageId) {
+        // Replace existing image - get the room ID from the existing image
+        const existingImage = await prisma.roomImage.findUnique({
+          where: { id: replaceImageId },
+          select: { roomId: true }
+        });
+        
+        if (!existingImage) {
+          return NextResponse.json(
+            { error: "Image not found" },
+            { status: 404 }
+          );
+        }
+
+        savedImage = await prisma.roomImage.update({
+          where: { id: replaceImageId },
+          data: {
+            url: imageUrl,
+            caption: caption || null,
+          },
+          include: {
+            room: true,
+          },
+        });
+      } else {
+        // Create new image
+        savedImage = await prisma.roomImage.create({
+          data: {
+            roomId: entityId,
+            url: imageUrl,
+            caption: caption || null,
+          },
+          include: {
+            room: true,
+          },
+        });
+      }
     } else if (type === 'facility') {
       // For facilities, we just return the URL since they store imageUrl directly
       savedImage = { url: imageUrl };

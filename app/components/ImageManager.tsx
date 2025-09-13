@@ -26,6 +26,8 @@ export default function ImageManager({
   const [editingCaption, setEditingCaption] = useState<string | null>(null);
   const [captionValue, setCaptionValue] = useState("");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isReplacing, setIsReplacing] = useState<string | null>(null);
+  const [replaceFile, setReplaceFile] = useState<File | null>(null);
 
   if (!images || images.length === 0) {
     return (
@@ -124,6 +126,69 @@ export default function ImageManager({
     setCaptionValue("");
   };
 
+  const handleReplaceImage = async (imageId: string) => {
+    if (!replaceFile) return;
+
+    setIsReplacing(imageId);
+    try {
+      // Find the room ID from the current image
+      const currentImage = images.find(img => img.id === imageId);
+      if (!currentImage) {
+        throw new Error('Image not found');
+      }
+
+      const formData = new FormData();
+      formData.append('file', replaceFile);
+      formData.append('type', 'room');
+      formData.append('id', 'temp'); // We'll get the room ID from the image
+      formData.append('replaceImageId', imageId); // Image ID to replace
+      formData.append('caption', `Replaced image for ${alt}`);
+
+      const response = await fetch('/api/admin/images', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        // Refresh the page to show the new image
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(`Error replacing image: ${error.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error replacing image:', error);
+      alert('Failed to replace image. Please try again.');
+    } finally {
+      setIsReplacing(null);
+      setReplaceFile(null);
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
+        return;
+      }
+      
+      setReplaceFile(file);
+    }
+  };
+
+  const handleCancelReplace = () => {
+    setReplaceFile(null);
+    setIsReplacing(null);
+  };
+
   return (
     <div className={`relative ${className}`}>
       {/* Main Image Display */}
@@ -149,6 +214,16 @@ export default function ImageManager({
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          
+          <button
+            onClick={() => setIsReplacing(images[currentIndex].id)}
+            className="bg-blue-500/80 hover:bg-blue-500 text-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
+            title="Replace image"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
           </button>
           
@@ -260,6 +335,62 @@ export default function ImageManager({
           </div>
         )}
       </div>
+
+      {/* Replace Image Section */}
+      {isReplacing === images[currentIndex].id && (
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h4 className="text-sm font-medium text-blue-900 mb-3">Replace Image</h4>
+          <div className="space-y-3">
+            <div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="block w-full text-sm text-gray-800 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              <p className="text-xs text-gray-600 mt-1">Select a new image to replace the current one (max 5MB)</p>
+            </div>
+            
+            {replaceFile && (
+              <div className="flex items-center space-x-2">
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700">
+                    Selected: <span className="font-medium">{replaceFile.name}</span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Size: {(replaceFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleReplaceImage(images[currentIndex].id)}
+                disabled={!replaceFile || isReplacing === images[currentIndex].id}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isReplacing === images[currentIndex].id ? (
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Replacing...</span>
+                  </div>
+                ) : (
+                  'Replace Image'
+                )}
+              </button>
+              <button
+                onClick={handleCancelReplace}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
