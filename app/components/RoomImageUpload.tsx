@@ -29,9 +29,8 @@ export default function RoomImageUpload({ roomId }: RoomImageUploadProps) {
       });
 
       if (response.ok) {
-        // Refresh the page to show the new image
-        router.refresh();
-        alert('Image uploaded successfully!');
+        // Force a hard refresh to show the new image
+        window.location.reload();
       } else {
         const error = await response.json();
         alert(`Error uploading image: ${error.error || 'Unknown error'}`);

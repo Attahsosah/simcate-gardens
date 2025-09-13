@@ -41,6 +41,15 @@ export default async function RoomPage({ params }: RoomPageProps) {
     notFound();
   }
 
+  // Debug: Log room data to see what we're working with
+  console.log('Room data loaded:', {
+    id: room.id,
+    name: room.name,
+    previewImageUrl: room.previewImageUrl,
+    roomImagesCount: room.roomImages?.length || 0,
+    roomImages: room.roomImages
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -59,14 +68,35 @@ export default async function RoomPage({ params }: RoomPageProps) {
           {/* Room Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Room Images */}
-            <ImageCarousel 
-              images={room.previewImageUrl ? 
-                [{ id: 'preview', url: room.previewImageUrl, caption: `${room.name} - Preview` }, ...(room.roomImages || [])] : 
-                (room.roomImages || [])
-              } 
-              alt={room.name}
-              className="w-full"
-            />
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Room Gallery</h3>
+              {room.roomImages && room.roomImages.length > 0 ? (
+                <ImageCarousel 
+                  images={room.previewImageUrl ? 
+                    [{ id: 'preview', url: room.previewImageUrl, caption: `${room.name} - Preview` }, ...room.roomImages] : 
+                    room.roomImages
+                  } 
+                  alt={room.name}
+                  className="w-full"
+                />
+              ) : room.previewImageUrl ? (
+                <ImageCarousel 
+                  images={[{ id: 'preview', url: room.previewImageUrl, caption: `${room.name} - Preview` }]} 
+                  alt={room.name}
+                  className="w-full"
+                />
+              ) : (
+                <div className="bg-gray-100 rounded-lg p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500">No images available for this room yet.</p>
+                  <p className="text-sm text-gray-400 mt-2">Upload images using the form below.</p>
+                </div>
+              )}
+            </div>
 
             {/* Room Info Card */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
