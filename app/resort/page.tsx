@@ -101,7 +101,7 @@ export default async function AboutUsPage() {
                   by providing exceptional service, stunning accommodations, and unforgettable memories.
                 </p>
                 <p className="opacity-90">
-                  Located on the pristine shores of Paradise Beach, our resort offers more than just a place to stay—it's 
+                  Located on the pristine shores of Paradise Beach, our resort offers more than just a place to stay—it&apos;s 
                   a gateway to experiencing the natural beauty and cultural richness of our tropical paradise.
                 </p>
               </div>
@@ -110,9 +110,11 @@ export default async function AboutUsPage() {
               <div className="relative group">
                 <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-1000"></div>
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                  <img
-                    src={resort?.imageUrl || "/uploads/resort_resort-1_1756070466330.jpg"}
+                  <Image
+                    src="/uploads/resort_resort-1_1756070466330.jpg"
                     alt="Simcate Gardens Resort"
+                    width={800}
+                    height={500}
                     className="w-full h-[500px] object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
@@ -186,7 +188,7 @@ export default async function AboutUsPage() {
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">Community Connection</h3>
                 <p className="text-blue-200 leading-relaxed">
-                  We're proud to support local communities and celebrate the rich cultural heritage of our region.
+                  We&apos;re proud to support local communities and celebrate the rich cultural heritage of our region.
                 </p>
               </div>
             </div>
@@ -219,9 +221,9 @@ export default async function AboutUsPage() {
                     <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
                       <span className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
                         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
                       </span>
                       Location
                     </h3>
@@ -281,9 +283,9 @@ export default async function AboutUsPage() {
                         <div>
                           <p className="font-semibold text-white text-lg">Complimentary Airport Shuttle</p>
                           <p className="text-blue-300">Available upon request</p>
-                        </div>
-                      </div>
-                      
+        </div>
+      </div>
+
                       <div className="flex items-start group">
                         <div className="w-6 h-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mr-4 mt-1 group-hover:scale-110 transition-transform duration-300">
                           <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
@@ -324,7 +326,7 @@ export default async function AboutUsPage() {
               <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center hover:border-yellow-400/50 transition-all duration-500 group-hover:scale-105">
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-500">🏆</div>
                 <h3 className="text-xl font-bold text-white mb-2">TripAdvisor</h3>
-                <p className="text-blue-200 font-medium">Travelers' Choice 2023</p>
+                <p className="text-blue-200 font-medium">Travelers&apos; Choice 2023</p>
               </div>
             </div>
             
@@ -343,9 +345,9 @@ export default async function AboutUsPage() {
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-500">🌿</div>
                 <h3 className="text-xl font-bold text-white mb-2">Green Globe</h3>
                 <p className="text-blue-200 font-medium">Sustainability Certified</p>
-              </div>
-            </div>
-            
+        </div>
+      </div>
+
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center hover:border-purple-400/50 transition-all duration-500 group-hover:scale-105">
@@ -366,8 +368,8 @@ export default async function AboutUsPage() {
               <div className="absolute -top-20 -left-20 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
               <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-white/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-            </div>
-            
+      </div>
+
             <div className="relative z-10">
               <div className="inline-block mb-6">
                 <span className="text-4xl">✨</span>
@@ -383,8 +385,8 @@ export default async function AboutUsPage() {
                 Book your stay today and become part of our story.
               </p>
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Link
-                  href="/rooms"
+        <Link
+          href="/rooms"
                   className="group relative inline-block bg-white text-indigo-600 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-2xl"
                 >
                   <span className="relative z-10">View Our Rooms</span>
@@ -396,7 +398,7 @@ export default async function AboutUsPage() {
                 >
                   <span className="relative z-10">Contact Us</span>
                   <div className="absolute inset-0 bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </Link>
+        </Link>
               </div>
             </div>
           </div>
